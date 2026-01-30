@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Diplomas MINU - Colegio San Judas Tadeo</title>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Old+Standard+TT:wght@400;700&family=Cormorant+Garamond:wght@400;500;600&family=Playfair+Display:wght@700;900&family=EB+Garamond:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --diploma-tan: #F5F0E8;
+      --border-bronze: #B8956A;
+      --border-light: #D4C4A8;
+      --text-dark: #4a4035;
+      --text-grey: #6a5f54;
+      --app-bg: #2a2d32;
+      --sidebar-width: 380px;
+      --accent-blue: #4A90E2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      background-color: var(--app-bg);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: #1a1d21;
+      padding: 30px;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      color: #fff;
+    }
+
+    .sidebar h2 {
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      border-bottom: 3px solid var(--accent-blue);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #ccc;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #2a2d32;
+      color: #fff;
+      font-family: 'Cormorant Garamond', serif;
+      transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 150px;
+      font-family: monospace;
+      line-height: 1.6;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .btn {
+      padding: 14px 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      font-size: 15px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+    }
+
+    .btn-secondary {
+      background: #444;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #555;
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, #27ae60, #229954);
+      color: #fff;
+      margin-top: auto;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    }
+
+    .stats {
+      background: #2a2d32;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .stats-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .stats-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .stats-label {
+      color: #aaa;
+    }
+
+    .stats-value {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Preview */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: var(--app-bg);
+      padding: 40px;
+      overflow: auto;
+    }
+
+    .navigation {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .nav-info {
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      min-width: 150px;
+      text-align: center;
+      background: #1a1d21;
+      padding: 10px 20px;
+      border-radius: 6px;
+    }
+
+    .btn-nav {
+      padding: 10px 20px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #555;
+      transform: scale(1.05);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .diploma-wrapper {
+      width: 11in;
+      height: 8.5in;
+      background: var(--diploma-tan);
+      box-shadow: 0 10px 40px rgba(0,0,0,.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transform-origin: center;
+      margin-bottom: 20px;
+    }
+
+    /* Decorative Border */
+    .border-outer {
+      position: absolute;
+      inset: 12px;
+      background: linear-gradient(90deg, 
+        var(--border-bronze) 0%, 
+        var(--border-light) 50%, 
+        var(--border-bronze) 100%);
+      padding: 2px;
+    }
+
+    .border-outer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--diploma-tan);
+      margin: 8px;
+    }
+
+    .border-pattern {
+      position: absolute;
+      inset: 22px;
+      border: 18px solid var(--border-bronze);
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px var(--border-bronze);
+      opacity: 0.4;
+    }
+
+    .border-inner {
+      position: absolute;
+      inset: 45px;
+      border: 3px solid var(--border-bronze);
+      pointer-events: none;
+      box-shadow: 
+        inset 0 0 0 1px var(--border-light),
+        0 0 0 1px var(--border-light);
+    }
+
+    .border-line {
+      position: absolute;
+      inset: 54px;
+      border: 1px solid var(--border-bronze);
+      pointer-events: none;
+    }
+
+    /* Content Container */
+    .diploma-content {
+      width: 92%;
+      height: 90%;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 70px 40px 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header with Logos */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 40px;
+    }
+
+    .logo-left, .logo-right {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-left img {
+      height: 180px;
+      width: auto;
+      object-fit: contain;
+      margin-left: -20px;
+    }
+
+    .logo-right img {
+      height: 140px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .school-info {
+      flex: 1;
+      text-align: center;
+      padding: 0 15px;
+      display: none; /* Ocultar el texto del colegio */
+    }
+
+    .school-name {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      color: #8B6F47;
+      letter-spacing: 3px;
+      margin: 0 0 5px 0;
+      font-weight: 600;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .school-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      color: #A0826D;
+      margin: 2px 0;
+      letter-spacing: 0.5px;
+      font-weight: 400;
+    }
+
+    /* Recognition Section */
+    .recognition {
+      text-align: center;
+      margin: 10px 0 15px 0;
+    }
+
+    .recognition-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      color: var(--text-dark);
+      margin: 0 0 15px 0;
+      font-weight: 500;
+    }
+
+    .recipient-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 62px;
+      color: var(--text-dark);
+      margin: 10px 0 15px 0;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-style: italic;
+    }
+
+    /* Body Text */
+    .body-text {
+      text-align: center;
+      font-size: 20px;
+      color: var(--text-dark);
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    .body-text p:first-child {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .event-name {
+      font-weight: 600;
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 10px 0;
+      line-height: 1.4;
+    }
+
+    .date-text {
+      margin: 20px 0 35px 0;
+      font-size: 17px;
+      color: var(--text-grey);
+      text-align: center;
+    }
+
+    /* Signatures */
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: auto;
+      padding: 0 30px;
+      gap: 40px;
+    }
+
+    .signature {
+      text-align: center;
+      flex: 1;
+    }
+
+    .signature-line {
+      border-top: 2px solid var(--text-dark);
+      margin-bottom: 10px;
+      height: 1px;
+    }
+
+    .signature-title {
+      font-size: 12px;
+      color: var(--text-grey);
+      margin: 0;
+      font-style: italic;
+    }
+
+    @media print {
+      @page {
+        size: 11in 8.5in landscape;
+        margin: 0;
+      }
+
+      html, body {
+        width: 11in;
+        height: 8.5in;
+        margin: 0;
+        padding: 0;
+        background: white;
+      }
+
+      body {
+        display: block;
+      }
+
+      .sidebar, .navigation {
+        display: none !important;
+      }
+
+      .preview-area {
+        background: white;
+        padding: 0;
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      .diploma-wrapper {
+        width: 11in;
+        height: 8.5in;
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+        page-break-inside: avoid;
+        display: flex;
+      }
+
+      .diploma-wrapper:last-child {
+        page-break-after: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>⚜ Generador MINU</h2>
+
+  <div class="form-group">
+    <label>🎓 Nombre del Evento</label>
+    <input id="inputEvent" class="form-control" value="MODELO INTERNO DE NACIONES UNIDAS - MINU 2024">
+  </div>
+
+  <div class="form-group">
+    <label>📅 Fecha del Evento</label>
+    <input id="inputDate" class="form-control" value="9 días del mes de marzo del año 2024">
+  </div>
+
+  <div class="form-group">
+    <label>📝 Lista de Participantes</label>
+    <textarea id="inputNames" class="form-control" placeholder="Escribe un nombre por línea:&#10;&#10;María González Pérez&#10;Juan Carlos Rodríguez&#10;Ana Martínez López&#10;..."></textarea>
+    <div class="hint">Un nombre completo por línea. Puedes pegar desde Excel.</div>
+  </div>
+
+  <div class="stats" id="statsBox" style="display:none;">
+    <div class="stats-item">
+      <span class="stats-label">Diplomas generados:</span>
+      <span class="stats-value" id="statsCount">0</span>
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">Diploma actual:</span>
+      <span class="stats-value" id="statsCurrent">-</span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="generateDiplomas()">✨ GENERAR DIPLOMAS</button>
+  <button class="btn btn-secondary" onclick="clearAll()">🗑️ LIMPIAR TODO</button>
+  <button class="btn btn-print" onclick="printAllDiplomas()">🖨️ IMPRIMIR TODOS</button>
+</div>
+
+<div class="preview-area">
+  <div class="navigation" id="navigation" style="display:none;">
+    <button class="btn-nav" id="btnPrev" onclick="previousDiploma()">◀ Anterior</button>
+    <div class="nav-info" id="navInfo">Diploma 1 de 1</div>
+    <button class="btn-nav" id="btnNext" onclick="nextDiploma()">Siguiente ▶</button>
+  </div>
+
+  <div id="diplomasContainer">
+    <!-- Los diplomas se generarán aquí -->
+  </div>
+</div>
+
+<script>
+  let diplomas = [];
+  let currentIndex = 0;
+
+  const inputEvent = document.getElementById("inputEvent");
+  const inputDate = document.getElementById("inputDate");
+  const inputNames = document.getElementById("inputNames");
+  const diplomasContainer = document.getElementById("diplomasContainer");
+  const navigation = document.getElementById("navigation");
+  const statsBox = document.getElementById("statsBox");
+
+  function generateDiplomas() {
+    const namesText = inputNames.value.trim();
+    if (!namesText) {
+      alert("Por favor, ingresa al menos un nombre.");
+      return;
+    }
+
+    // Procesar nombres (eliminar líneas vacías)
+    const names = namesText
+      .split('\n')
+      .map(name => name.trim())
+      .filter(name => name.length > 0);
+
+    if (names.length === 0) {
+      alert("No se encontraron nombres válidos.");
+      return;
+    }
+
+    // Limpiar diplomas anteriores
+    diplomas = [];
+    diplomasContainer.innerHTML = '';
+    
+    // Generar un diploma por cada nombre
+    names.forEach((name, index) => {
+      const diplomaEl = createDiploma(name, index);
+      diplomas.push(diplomaEl);
+      diplomasContainer.appendChild(diplomaEl);
+    });
+
+    // Mostrar navegación y estadísticas
+    navigation.style.display = 'flex';
+    statsBox.style.display = 'block';
+    document.getElementById('statsCount').textContent = diplomas.length;
+
+    // Mostrar primer diploma
+    currentIndex = 0;
+    showDiploma(currentIndex);
+  }
+
+  function createDiploma(name, index) {
+    const diploma = document.createElement('div');
+    diploma.className = 'diploma-wrapper';
+    diploma.style.display = 'none';
+    diploma.innerHTML = `
+      <div class="border-outer"></div>
+      <div class="border-pattern"></div>
+      <div class="border-inner"></div>
+      <div class="border-line"></div>
+      
+      <div class="diploma-content">
+        <div class="header">
+          <div class="logo-left">
+            <img src="logos/logo-colegio.png" alt="Colegio San Judas Tadeo">
+          </div>
+          <div class="school-info">
+            <h1 class="school-name">Colegio San Judas Tadeo</h1>
+            <p class="school-subtitle">PP CARMELITAS DESCALZOS</p>
+            <p class="school-subtitle">Y Club de Jóvenes por la Democracia</p>
+          </div>
+          <div class="logo-right">
+            <img src="logos/logo-onu.png" alt="ONU">
+          </div>
+        </div>
+
+        <div class="recognition">
+          <p class="recognition-label">Reconoce a:</p>
+          <div class="recipient-name">${name}</div>
+        </div>
+
+        <div class="body-text">
+          <p>Por Su Participación En El</p>
+          <p class="event-name">${inputEvent.value}</p>
+        </div>
+
+        <p class="date-text">
+          Dado en Santo Domingo, D. N., a los ${inputDate.value}.
+        </p>
+
+        <div class="signatures">
+          <div class="signature">
+            <div class="signature-line"></div>
+            <p class="signature-title">Coordinador(a) ONU - SJT</p>
+          </div>
+
+          <div class="signature">
+            <div class="signature-line"></div>
+            <p class="signature-title">Director(a)</p>
+          </div>
+
+          <div class="signature">
+            <div class="signature-line"></div>
+            <p class="signature-title">Secretario(a) General</p>
+          </div>
+        </div>
+      </div>
+    `;
+    return diploma;
+  }
+
+  function showDiploma(index) {
+    // Ocultar todos
+    diplomas.forEach(d => d.style.display = 'none');
+    
+    // Mostrar el actual
+    if (diplomas[index]) {
+      diplomas[index].style.display = 'flex';
+    }
+
+    // Actualizar navegación
+    document.getElementById('navInfo').textContent = `Diploma ${index + 1} de ${diplomas.length}`;
+    document.getElementById('statsCurrent').textContent = `${index + 1} de ${diplomas.length}`;
+    document.getElementById('btnPrev').disabled = index === 0;
+    document.getElementById('btnNext').disabled = index === diplomas.length - 1;
+  }
+
+  function previousDiploma() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showDiploma(currentIndex);
+    }
+  }
+
+  function nextDiploma() {
+    if (currentIndex < diplomas.length - 1) {
+      currentIndex++;
+      showDiploma(currentIndex);
+    }
+  }
+
+  function clearAll() {
+    if (confirm('¿Estás seguro de que deseas limpiar todos los diplomas?')) {
+      inputNames.value = '';
+      diplomas = [];
+      diplomasContainer.innerHTML = '';
+      navigation.style.display = 'none';
+      statsBox.style.display = 'none';
+      currentIndex = 0;
+    }
+  }
+
+  function printAllDiplomas() {
+    if (diplomas.length === 0) {
+      alert('Primero debes generar los diplomas.');
+      return;
+    }
+
+    // Mostrar todos los diplomas para impresión
+    diplomas.forEach(d => d.style.display = 'flex');
+    
+    // Esperar un momento para que se rendericen
+    setTimeout(() => {
+      window.print();
+      
+      // Después de imprimir, volver a mostrar solo el actual
+      setTimeout(() => {
+        if (diplomas.length > 0) {
+          showDiploma(currentIndex);
+        }
+      }, 100);
+    }, 100);
+  }
+</script>
+
+</body>
+</html>
